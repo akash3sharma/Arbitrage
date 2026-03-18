@@ -1,0 +1,24 @@
+{
+  "name": "arbitrage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jainabhi90/Arbitrage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jainabhi90/Arbitrage/issues"
+  },
+  "homepage": "https://github.com/Jainabhi90/Arbitrage#readme",
+  "dependencies": {
+    "fuse.js": "^7.1.0"
+  }
+}
