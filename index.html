@@ -14,6 +14,19 @@
       color: #4ade80;
     }
 
+    .stats {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+      color: #888;
+      font-size: 13px;
+    }
+
+    .stats span {
+      color: #4ade80;
+      font-weight: bold;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -40,11 +53,47 @@
       color: #888;
       padding: 20px 0;
     }
+
+    .time {
+      color: #888;
+      font-size: 11px;
+    }
+
+    .log {
+      margin-top: 30px;
+      border-top: 1px solid #333;
+      padding-top: 15px;
+    }
+
+    .log h3 {
+      color: #4ade80;
+      margin-bottom: 10px;
+    }
+
+    .log-entry {
+      padding: 6px 0;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 13px;
+    }
+
+    .log-entry .found {
+      color: #4ade80;
+    }
+
+    .log-entry .none {
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <h2>Live Arb Opportunities</h2>
-  <p id="status" style="color: #888; font-size: 12px;">Waiting for server...</p>
+
+  <div class="stats">
+    <div>Status: <span id="status">Connecting...</span></div>
+    <div>Last Scanned: <span id="lastScanned">-</span></div>
+    <div>Pairs Monitored: <span id="totalPairs">-</span></div>
+    <div>Total Arb Found: <span id="totalFound">0</span></div>
+  </div>
 
   <table>
     <thead>
@@ -54,48 +103,91 @@
         <th>NO (B)</th>
         <th>Total</th>
         <th>Profit</th>
+        <th>Detected At</th>
       </tr>
     </thead>
     <tbody id="tbody">
       <tr>
-        <td colspan="5" class="no-data">No opportunities found yet.</td>
+        <td colspan="6" class="no-data">Waiting for first scan...</td>
       </tr>
     </tbody>
   </table>
 
+  <div class="log">
+    <h3>Scan History</h3>
+    <div id="log"></div>
+  </div>
+
   <script>
-   async function refresh() {
-  try {
-    const res = await fetch('http://localhost:3000/opportunities')
-    const data = await res.json()
+    let totalFound = 0
+    const maxLogEntries = 20
 
-    const tbody = document.getElementById('tbody')
-    const status = document.getElementById('status')
+    async function refresh() {
+      try {
+        const res = await fetch('http://localhost:3000/opportunities')
+        const data = await res.json()
 
-    status.textContent = `Last scanned: ${data.lastScanned} | Pairs monitored: ${data.totalPairs}`
+        const now = new Date().toLocaleTimeString()
 
-    if (data.opportunities.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="no-data">No arb opportunities right now. Scanning...</td></tr>'
-      return
+        // update stats
+        document.getElementById('status').textContent = 'Live'
+        document.getElementById('lastScanned').textContent = data.lastScanned
+        document.getElementById('totalPairs').textContent = data.totalPairs
+
+        // update table
+        const tbody = document.getElementById('tbody')
+
+        if (data.opportunities.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="no-data">No arb opportunities right now. Scanning...</td></tr>'
+        } else {
+          totalFound += data.opportunities.length
+          document.getElementById('totalFound').textContent = totalFound
+
+          tbody.innerHTML = data.opportunities.map(op => `
+            <tr>
+              <td>${op.market}</td>
+              <td>${op.yesPrice.toFixed(3)}</td>
+              <td>${op.noPrice.toFixed(3)}</td>
+              <td>${op.total.toFixed(3)}</td>
+              <td class="arb">+${(op.profit * 100).toFixed(2)}%</td>
+              <td class="time">${now}</td>
+            </tr>
+          `).join('')
+        }
+
+        // add to scan log
+        const log = document.getElementById('log')
+        const entry = document.createElement('div')
+        entry.className = 'log-entry'
+
+        if (data.opportunities.length > 0) {
+          entry.innerHTML = `
+            <span class="time">${now}</span> — 
+            <span class="found">⚡ ${data.opportunities.length} arb found</span> → 
+            ${data.opportunities.map(o => `${o.market} (+${(o.profit * 100).toFixed(2)}%)`).join(', ')}
+          `
+        } else {
+          entry.innerHTML = `
+            <span class="time">${now}</span> — 
+            <span class="none">No arb this scan</span>
+          `
+        }
+
+        // add new entry at top
+        log.insertBefore(entry, log.firstChild)
+
+        // keep only last 20 entries
+        while (log.children.length > maxLogEntries) {
+          log.removeChild(log.lastChild)
+        }
+
+      } catch (err) {
+        document.getElementById('status').textContent = 'Server offline - retrying...'
+      }
     }
 
-    tbody.innerHTML = data.opportunities.map(op => `
-      <tr>
-        <td>${op.market}</td>
-        <td>${op.yesPrice.toFixed(3)}</td>
-        <td>${op.noPrice.toFixed(3)}</td>
-        <td>${op.total.toFixed(3)}</td>
-        <td class="arb">+${(op.profit * 100).toFixed(2)}%</td>
-      </tr>
-    `).join('')
-
-  } catch (err) {
-    document.getElementById('status').textContent = 'Server offline - retrying...'
-  }
-}
-
-setInterval(refresh, 2000)
-refresh()
+    setInterval(refresh, 2000)
+    refresh()
   </script>
 </body>
 </html>
