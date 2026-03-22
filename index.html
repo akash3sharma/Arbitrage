@@ -99,8 +99,8 @@
     <thead>
       <tr>
         <th>Market</th>
-        <th>YES (A)</th>
-        <th>NO (B)</th>
+        <th>YES</th>
+        <th>NO </th>
         <th>Total</th>
         <th>Profit</th>
         <th>Detected At</th>
@@ -176,17 +176,13 @@
         // add new entry at top
         log.insertBefore(entry, log.firstChild)
 
-        // keep only last 20 entries
-        while (log.children.length > maxLogEntries) {
-          log.removeChild(log.lastChild)
-        }
 
       } catch (err) {
         document.getElementById('status').textContent = 'Server offline - retrying...'
       }
     }
 
-    setInterval(refresh, 2000)
+    setInterval(refresh, 1000)
     refresh()
   </script>
 </body>
