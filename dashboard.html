@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArbDetector — Live Dashboard</title>
+  <meta name="description" content="Live arbitrage dashboard — real-time opportunities across Manifold and Polymarket.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%2316a34a'/><text x='16' y='21' text-anchor='middle' font-size='14' font-weight='bold' fill='white' font-family='monospace'>A</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="dnav" id="dnav">
+  <div class="dn-left">
+    <a class="dn-back" href="index.html" aria-label="Go back to landing page">← Landing</a>
+    <div class="dn-sep"></div>
+    <div class="dn-brand">
+      <div class="ndot"></div>
+      <div class="dn-name">ArbDetector</div>
+    </div>
+  </div>
+  <div class="dn-right">
+    <div class="dpill live">live</div>
+    <div class="dpill" id="dscan">scan #0</div>
+    <div class="dcd" id="dcd" aria-live="polite">next in 5s</div>
+    <button class="pause-btn" id="pbtn" onclick="togglePause()" aria-label="Pause or Resume Scanning">⏸ pause</button>
+  </div>
+</nav>
+
+<div class="stat-bar" aria-label="Global Statistics">
+  <div class="sb-item"><div class="sb-label">PAIRS</div><div class="sb-val">7</div><div class="sb-hint">monitored</div></div>
+  <div class="sb-item"><div class="sb-label">ACTIVE ARB</div><div class="sb-val g" id="d-act">—</div><div class="sb-hint" id="d-acth">scanning...</div></div>
+  <div class="sb-item"><div class="sb-label">BEST PROFIT</div><div class="sb-val g" id="d-best">—</div><div class="sb-hint" id="d-besth">after fees</div></div>
+  <div class="sb-item"><div class="sb-label">LAST SCAN</div><div class="sb-val" id="d-time" style="font-size:15px">--:--</div><div class="sb-hint" id="d-timeh">connecting...</div></div>
+</div>
+
+<main class="dash-main">
+  <div class="dash-left">
+    <div class="divdr"><div class="dl"></div><h2 class="dlbl">LIVE OPPORTUNITIES</h2><div class="dl"></div></div>
+    <div class="opp-grid" id="opp-grid" aria-live="polite">
+      <div class="empty-state">
+        <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:8px">Scanning markets...</div>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    
+    <div class="divdr"><div class="dl"></div><h2 class="dlbl">NEAR MISS — watching</h2><div class="dl"></div></div>
+    <div class="near-grid" id="near-grid" aria-live="polite">
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+    </div>
+  </div>
+
+  <div class="dash-right">
+    <div class="divdr"><div class="dl"></div><h2 class="dlbl">CALCULATOR</h2><div class="dl"></div></div>
+    <div class="calc-box">
+      <div class="calc-lbl">How much will I make?</div>
+      <div class="calc-row">
+        <label for="camt" class="cl">Invest</label>
+        <input class="ci" type="number" id="camt" value="10000" oninput="window.calcP()" aria-label="Investment Amount">
+        <div class="cu" aria-hidden="true">₹</div>
+      </div>
+      <div class="calc-row" style="margin-bottom:14px">
+        <div class="cl">Best arb</div>
+        <div style="font-size:13px;color:var(--accent);font-weight:700;font-family:var(--mono)" id="cpct">+1.60%</div>
+      </div>
+      <div class="calc-res" id="calc-res" aria-live="polite">
+        <div class="cr-l">Guaranteed profit</div>
+        <div class="cr-v" id="cres">₹160</div>
+      </div>
+      <div class="calc-note">Both bets placed simultaneously.<br>One always pays. Profit = difference after fees.</div>
+    </div>
+    
+    <div class="divdr"><div class="dl"></div><h2 class="dlbl">SCAN HISTORY</h2><div class="dl"></div></div>
+    <div class="log-box">
+      <div class="log-head">
+        <div class="log-tl">RECENT SCANS</div>
+        <button class="log-clr" onclick="document.getElementById('li').innerHTML=''" aria-label="Clear scan history">clear</button>
+      </div>
+      <div class="log-inner" id="li" aria-live="polite" aria-atomic="false"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="dash-foot">
+  <div class="fp on"><div class="fp-dot"></div>Manifold</div>
+  <div class="fp on"><div class="fp-dot"></div>Polymarket</div>
+  <div class="fp">7 pairs</div>
+  <div class="fp">fees included</div>
+  <div class="fp" id="dtotal" aria-live="polite">0 arb detected</div>
+</footer>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

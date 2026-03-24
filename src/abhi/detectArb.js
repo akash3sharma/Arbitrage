@@ -7,13 +7,13 @@ function detectArb(marketA, marketB) {
   const combo2Total = marketA.noPrice + marketB.yesPrice
   const combo2Profit = 1 - combo2Total - totalFees
 
-  if (combo1Profit > 0 ) {
+  if (combo1Profit > 0) {
     return {
       market: marketA.marketId,
       yesPrice: marketA.yesPrice,
       noPrice: marketB.noPrice,
       total: combo1Total,
-      profit:combo1Profit
+      profit: combo1Profit
     }
   }
   else if (combo2Profit > 0) {
@@ -22,7 +22,7 @@ function detectArb(marketA, marketB) {
       yesPrice: marketB.yesPrice,
       noPrice: marketA.noPrice,
       total: combo2Total,
-      profit:combo2Profit
+      profit: combo2Profit
     }
   }
   return false

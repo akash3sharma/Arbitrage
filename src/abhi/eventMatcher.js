@@ -1,7 +1,7 @@
 const Fuse = require('fuse.js')
 
 function matchMarkets(platformAPrices, platformBPrices) {
-  
+
   const fuse = new Fuse(platformBPrices, {
     keys: ['marketId'],
     threshold: 0.2

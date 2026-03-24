@@ -1,189 +1,242 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Arb Detector</title>
-  <style>
-    body {
-      font-family: monospace;
-      padding: 20px;
-      background: #0f0f0f;
-      color: #eee;
-    }
-
-    h2 {
-      color: #4ade80;
-    }
-
-    .stats {
-      display: flex;
-      gap: 30px;
-      margin-bottom: 20px;
-      color: #888;
-      font-size: 13px;
-    }
-
-    .stats span {
-      color: #4ade80;
-      font-weight: bold;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      text-align: left;
-      padding: 10px;
-      border-bottom: 2px solid #4ade80;
-      color: #4ade80;
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-    }
-
-    .arb {
-      color: #4ade80;
-      font-weight: bold;
-    }
-
-    .no-data {
-      color: #888;
-      padding: 20px 0;
-    }
-
-    .time {
-      color: #888;
-      font-size: 11px;
-    }
-
-    .log {
-      margin-top: 30px;
-      border-top: 1px solid #333;
-      padding-top: 15px;
-    }
-
-    .log h3 {
-      color: #4ade80;
-      margin-bottom: 10px;
-    }
-
-    .log-entry {
-      padding: 6px 0;
-      border-bottom: 1px solid #1a1a1a;
-      font-size: 13px;
-    }
-
-    .log-entry .found {
-      color: #4ade80;
-    }
-
-    .log-entry .none {
-      color: #555;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArbDetector — Find arbitrage before it closes</title>
+  <meta name="description" content="Real-time arbitrage scanner for Manifold and Polymarket. Find guaranteed profit opportunities before the market corrects.">
+  <meta property="og:title" content="ArbDetector — Find arbitrage before it closes">
+  <meta property="og:description" content="Scan two prediction markets simultaneously. Profit guaranteed, regardless of outcome.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%2316a34a'/><text x='16' y='21' text-anchor='middle' font-size='14' font-weight='bold' fill='white' font-family='monospace'>A</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>Live Arb Opportunities</h2>
 
-  <div class="stats">
-    <div>Status: <span id="status">Connecting...</span></div>
-    <div>Last Scanned: <span id="lastScanned">-</span></div>
-    <div>Pairs Monitored: <span id="totalPairs">-</span></div>
-    <div>Total Arb Found: <span id="totalFound">0</span></div>
+<nav id="nav">
+  <div class="n-brand">
+    <div class="ndot"></div>
+    <div class="n-name">ArbDetector</div>
+    <div class="n-beta">BETA</div>
   </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Market</th>
-        <th>YES</th>
-        <th>NO </th>
-        <th>Total</th>
-        <th>Profit</th>
-        <th>Detected At</th>
-      </tr>
-    </thead>
-    <tbody id="tbody">
-      <tr>
-        <td colspan="6" class="no-data">Waiting for first scan...</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="log">
-    <h3>Scan History</h3>
-    <div id="log"></div>
+  <div class="n-links" id="n-links">
+    <div class="n-link" data-section="how" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</div>
+    <div class="n-link" data-section="math" onclick="document.getElementById('math').scrollIntoView({behavior:'smooth'})">The math</div>
+    <div class="n-link" data-section="teaser" onclick="document.getElementById('teaser').scrollIntoView({behavior:'smooth'})">Dashboard</div>
+    <div class="n-link" data-section="waitlist" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Get notified</div>
   </div>
+  <a href="dashboard.html" style="text-decoration:none"><button class="n-cta">Open Dashboard →</button></a>
+</nav>
 
-  <script>
-    let totalFound = 0
-    const maxLogEntries = 20
+<!-- HERO WITH BEAM ANIMATION -->
+<main>
+<div class="hero-wrap" id="hero-wrap">
+  <canvas class="beams-canvas" id="beams-canvas"></canvas>
+  <div class="beam-floor"></div>
+  <div class="hero-content fade-in visible">
+    <div class="h-badge"><div class="h-bdot"></div>LIVE · Manifold × Polymarket · 5s scans</div>
+    <h1 class="h-title">Find the <em>edge.</em><br>Before it closes.</h1>
+    <div class="h-kicker">Scan two platforms simultaneously.<br><strong>Profit guaranteed, regardless of outcome.</strong></div>
+    <div class="h-sub">ArbDetector finds price gaps between the same events on Manifold and Polymarket. Buy both sides — one always wins. Keep the difference after all fees.</div>
+    <div class="h-btns">
+      <button class="btn-pri" aria-label="See Live Opportunities" onclick="document.getElementById('teaser').scrollIntoView({behavior:'smooth'})">
+        See Live Opportunities
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-sec" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
+    </div>
+    <div class="h-stats">
+      <div class="h-stat"><div class="h-stat-val">7</div><div class="h-stat-lbl">PAIRS MONITORED</div></div>
+      <div class="h-stat"><div class="h-stat-val" id="h-arb">2</div><div class="h-stat-lbl">ACTIVE ARB</div></div>
+      <div class="h-stat"><div class="h-stat-val" id="h-best">+1.6%</div><div class="h-stat-lbl">BEST PROFIT</div></div>
+      <div class="h-stat"><div class="h-stat-val">5s</div><div class="h-stat-lbl">SCAN SPEED</div></div>
+    </div>
+    <div class="scroll-hint" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+      <span>SCROLL</span>
+      <div class="scroll-arrow" aria-hidden="true"></div>
+    </div>
+  </div>
+</div>
 
-    async function refresh() {
-      try {
-        const res = await fetch('http://localhost:3000/opportunities')
-        const data = await res.json()
+<!-- HOW IT WORKS -->
+<section class="hiw-bg" id="how">
+  <div class="sec-pad">
+    <div class="fade-in">
+      <div class="eyebrow">HOW IT WORKS</div>
+      <h2 class="sec-title">Three steps to<br><em>free profit</em></h2>
+      <div class="sec-sub" style="max-width:380px">Arbitrage means both outcomes are covered. One always pays — you keep the gap.</div>
+    </div>
+    <div class="steps fade-in fade-in-d1">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+        <div class="step-title">We scan both platforms</div>
+        <div class="step-desc">Every 5 seconds we fetch live prices from Manifold and Polymarket. Our fuzzy matcher correctly pairs markets even when names differ between platforms.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+        <div class="step-title">We detect the gap</div>
+        <div class="step-desc">If YES on Platform A plus NO on Platform B totals less than 1.00 after both fees — that is arbitrage. You profit no matter what actually happens.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="step-title">You act on it</div>
+        <div class="step-desc">The dashboard shows exact prices, profit percentage, and a live calculator — see the exact rupee amount before placing a single trade.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        const now = new Date().toLocaleTimeString()
+<!-- MATH — INTERACTIVE -->
+<section class="math-bg" id="math">
+  <div class="sec-pad">
+    <div class="math-grid">
+      <div class="fade-in">
+        <div class="eyebrow">THE MATH</div>
+        <h2 class="sec-title">Why it is<br><em>risk free</em></h2>
+        <div class="sec-sub" style="margin-bottom:28px;max-width:340px">Try it yourself — type any two prices and see the profit calculate live.</div>
+        <div class="math-box">
+          <div class="mb-header">
+            <div class="mb-hl">INTERACTIVE CALCULATOR</div>
+            <div class="mb-tag">LIVE</div>
+          </div>
+          <div class="mb-row">
+            <label for="m-yes" class="mb-lbl">YES price on Platform A</label>
+            <input class="mb-input" id="m-yes" type="number" value="0.58" step="0.01" min="0" max="1" oninput="calcMath()">
+          </div>
+          <div class="mb-row">
+            <label for="m-no" class="mb-lbl">NO price on Platform B</label>
+            <input class="mb-input" id="m-no" type="number" value="0.35" step="0.01" min="0" max="1" oninput="calcMath()">
+          </div>
+          <div class="mb-row">
+            <label for="m-fee" class="mb-lbl">Both platform fees</label>
+            <input class="mb-input" id="m-fee" type="number" value="0.05" step="0.01" min="0" max="0.2" oninput="calcMath()">
+          </div>
+          <div class="mb-row"><div class="mb-lbl">Total spent</div><div class="mb-val" id="m-total">0.98</div></div>
+          <div class="mb-row"><div class="mb-lbl">One bet always pays</div><div class="mb-val">1.00</div></div>
+          <div class="mb-row res" id="m-res-row">
+            <div class="mb-lbl" id="m-res-lbl" style="color:var(--profit);font-weight:600">Guaranteed profit</div>
+            <div class="mb-val profit" id="m-profit">+2.00%</div>
+          </div>
+          <div class="math-note" id="m-note">On ₹10,000 → guaranteed ₹200 profit</div>
+        </div>
+      </div>
+      <div class="hcards fade-in fade-in-d1">
+        <div class="hcard"><div class="hcard-head"><div class="hbadge">1</div><div class="hcard-title">Fuzzy market matching</div></div><div class="hcard-desc">Platforms name the same event differently. fuse.js with 0.2 threshold correctly pairs mismatched market names across both platforms.</div></div>
+        <div class="hcard"><div class="hcard-head"><div class="hbadge">2</div><div class="hcard-title">Fee-adjusted profit only</div></div><div class="hcard-desc">Both platform fees (~2–3% each) are subtracted before showing any profit. Every opportunity shown is genuinely profitable after all costs.</div></div>
+        <div class="hcard"><div class="hcard-head"><div class="hbadge">3</div><div class="hcard-title">Both directions tested</div></div><div class="hcard-desc">YES(A)+NO(B) and NO(A)+YES(B) are both tested for every pair. Whichever combination profits gets surfaced — nothing is missed.</div></div>
+        <div class="hcard"><div class="hcard-head"><div class="hbadge">4</div><div class="hcard-title">Near-miss tracking</div></div><div class="hcard-desc">Pairs almost at arb are shown separately so you can watch markets about to open — not just ones already profitable.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        // update stats
-        document.getElementById('status').textContent = 'Live'
-        document.getElementById('lastScanned').textContent = data.lastScanned
-        document.getElementById('totalPairs').textContent = data.totalPairs
+<!-- TEASER -->
+<section class="teaser-bg" id="teaser">
+  <div class="sec-pad">
+    <div class="teaser-grid">
+      <div class="fade-in">
+        <div class="eyebrow">LIVE DASHBOARD</div>
+        <h2 class="sec-title">Real data.<br><em>Right now.</em></h2>
+        <div class="sec-sub" style="margin-bottom:28px;max-width:340px">Live preview of the dashboard. Open the full app for the profit calculator, scan history, near-miss tracker, and pause controls.</div>
+        <a href="dashboard.html" style="text-decoration:none">
+          <button class="btn-pri" aria-label="Open Full Dashboard">
+            Open Full Dashboard
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </a>
+      </div>
+      <div class="tbox fade-in fade-in-d1">
+        <div class="tbox-bar">
+          <div class="tb-brand"><div class="ndot" style="width:6px;height:6px"></div>live feed</div>
+          <div id="t-status" class="tb-live">SCANNING</div>
+        </div>
+        <div class="tbox-inner">
+          <div class="tcards">
+            <div class="tcard best">
+              <div class="tc-top"><div></div><div class="tc-hot">best edge</div></div>
+              <div class="tc-pct" id="t-pct1">+1.60%</div>
+              <div class="tc-name">Will Italy qualify on the field for the 2026 FIFA World Cup?</div>
+              <div class="tc-bar"><div class="tc-fill" style="width:85%"></div></div>
+              <div class="tc-pills">
+                <div class="tc-pill">YES <b>0.58</b></div>
+                <div class="tc-pill">NO <b>0.35</b></div>
+                <div class="tc-pill">total <b>0.93</b></div>
+              </div>
+              <div class="tc-hint">On ₹10,000 → guaranteed <span>₹160</span></div>
+            </div>
+            <div class="tcard">
+              <div class="tc-pct dim">+0.16%</div>
+              <div class="tc-name">Will England win the 2026 FIFA World Cup?</div>
+              <div class="tc-bar"><div class="tc-fill" style="width:10%;background:#4ade80"></div></div>
+              <div class="tc-pills">
+                <div class="tc-pill">YES <b>0.08</b></div>
+                <div class="tc-pill">NO <b>0.87</b></div>
+                <div class="tc-pill">total <b>0.95</b></div>
+              </div>
+              <div class="tc-hint">On ₹10,000 → guaranteed <span>₹16</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        // update table
-        const tbody = document.getElementById('tbody')
+<!-- WAITLIST -->
+<section class="wl-bg" id="waitlist">
+  <div class="wl-inner fade-in">
+    <div class="wl-eye">STAY AHEAD</div>
+    <h2 class="wl-title">Be first when<br><em>alerts go live.</em></h2>
+    <div class="wl-sub">Telegram alerts are coming. Drop your email and we will notify you the moment they launch.</div>
+    <form class="wl-form" id="wl-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="handleWL(event)">
+      <label for="wl-email" class="sr-only" style="display:none">Email Address</label>
+      <input class="wl-inp" type="email" name="email" id="wl-email" placeholder="your@email.com" required aria-label="Email Address">
+      <button class="wl-btn" type="submit">Join Waitlist</button>
+    </form>
+    <div class="wl-note" id="wl-note">No spam. One email when it is ready.</div>
+    <div class="wl-ok" id="wl-ok">You are on the list. We will reach out when alerts launch.</div>
+  </div>
+</section>
+</main>
 
-        if (data.opportunities.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="no-data">No arb opportunities right now. Scanning...</td></tr>'
-        } else {
-          totalFound += data.opportunities.length
-          document.getElementById('totalFound').textContent = totalFound
+<!-- FOOTER -->
+<footer>
+  <div class="f-top">
+    <div class="f-brand-wrap">
+      <div class="f-brand"><div class="ndot"></div>ArbDetector</div>
+      <div class="f-tagline">Find arbitrage before it closes.</div>
+    </div>
+    <div class="f-links-group">
+      <div class="f-link-col">
+        <div class="f-link-title">PRODUCT</div>
+        <div class="f-link" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})" tabindex="0">How it works</div>
+        <div class="f-link" onclick="document.getElementById('math').scrollIntoView({behavior:'smooth'})" tabindex="0">The math</div>
+        <div class="f-link" onclick="document.getElementById('teaser').scrollIntoView({behavior:'smooth'})" tabindex="0">Live dashboard</div>
+      </div>
+      <div class="f-link-col">
+        <div class="f-link-title">GET STARTED</div>
+        <div class="f-link" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})" tabindex="0">Join waitlist</div>
+        <div class="f-link" tabindex="0">GitHub ↗</div>
+        <div class="f-link" tabindex="0">Contact</div>
+      </div>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-note">Built by Abhi & Aakash · 2026 · All prices shown are indicative</div>
+    <div class="f-badges">
+      <div class="f-badge live">LIVE</div>
+      <div class="f-badge">Manifold</div>
+      <div class="f-badge">Polymarket</div>
+      <div class="f-badge">fuse.js</div>
+    </div>
+  </div>
+</footer>
 
-          tbody.innerHTML = data.opportunities.map(op => `
-            <tr>
-              <td>${op.market}</td>
-              <td>${op.yesPrice.toFixed(3)}</td>
-              <td>${op.noPrice.toFixed(3)}</td>
-              <td>${op.total.toFixed(3)}</td>
-              <td class="arb">+${(op.profit * 100).toFixed(2)}%</td>
-              <td class="time">${now}</td>
-            </tr>
-          `).join('')
-        }
-
-        // add to scan log
-        const log = document.getElementById('log')
-        const entry = document.createElement('div')
-        entry.className = 'log-entry'
-
-        if (data.opportunities.length > 0) {
-          entry.innerHTML = `
-            <span class="time">${now}</span> — 
-            <span class="found">⚡ ${data.opportunities.length} arb found</span> → 
-            ${data.opportunities.map(o => `${o.market} (+${(o.profit * 100).toFixed(2)}%)`).join(', ')}
-          `
-        } else {
-          entry.innerHTML = `
-            <span class="time">${now}</span> — 
-            <span class="none">No arb this scan</span>
-          `
-        }
-
-        // add new entry at top
-        log.insertBefore(entry, log.firstChild)
-
-
-      } catch (err) {
-        document.getElementById('status').textContent = 'Server offline - retrying...'
-      }
-    }
-
-    setInterval(refresh, 1000)
-    refresh()
-  </script>
+<script src="main.js"></script>
 </body>
 </html>
