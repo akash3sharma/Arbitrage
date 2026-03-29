@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Jainabhi90/Arbitrage#readme",
   "dependencies": {
+    "express": "^5.2.1",
     "fuse.js": "^7.1.0"
   }
 }
