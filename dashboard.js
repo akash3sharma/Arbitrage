@@ -1,6 +1,9 @@
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? 'http://localhost:3000' 
-  : 'https://api.arbdetector.com'; 
+const isLocalRuntime =
+  window.location.protocol === 'file:' ||
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+
+const API_URL = isLocalRuntime ? 'http://localhost:3000' : 'https://api.arbdetector.com'
 const UI_SCAN_SECONDS = 3
 
 let scanN=0,total=0,cd=UI_SCAN_SECONDS,paused=false,bestP=0.016
@@ -11,20 +14,11 @@ let platformBLabel='POLYMARKET'
 let currentNearMisses=[]
 let currentWeekCandidates=[]
 
-const mock=[
-  {market:'Will Italy qualify on the field for the 2026 FIFA World Cup?',short:'ITA-QUAL',yesPrice:.58,noPrice:.35,total:.93,profit:.016},
-  {market:'Will England win the 2026 FIFA World Cup?',short:'ENG-WIN',yesPrice:.08,noPrice:.87,total:.95,profit:.002}
-]
-const nearMock=[
-  {market:'Will France win the 2026 FIFA World Cup?',short:'FRA-WIN',profit:-.018,gap:1.8},
-  {market:'Will Argentina win the 2026 FIFA World Cup?',short:'ARG-WIN',profit:-.031,gap:3.1},
-  {market:'Will Japan reach the quarterfinals 2026?',short:'JPN-QTR',profit:-.042,gap:4.2}
-]
-const weekMock=[
-  {market:'Will BTC close above $95k this week?',gap:1.2,timeToExpiryLabel:'3d left',isArb:false},
-  {market:'Will ETH close above $5k this week?',gap:0.9,timeToExpiryLabel:'4d left',isArb:false},
-  {market:'Will US CPI beat estimate this week?',gap:1.6,timeToExpiryLabel:'2d left',isArb:false}
-]
+const emptyData = {
+  opportunities: [],
+  nearMisses: [],
+  weekCandidates: []
+}
 
 window.addEventListener('scroll',()=> {
   const dnav = document.getElementById('dnav');
@@ -219,6 +213,7 @@ async function scan(){
   if(!dtimeh) return;
   try{
     const r=await fetch(`${API_URL}/opportunities`)
+    if(!r.ok) throw new Error(`HTTP ${r.status}`)
     const d=await r.json()
     if(!d||!Array.isArray(d.opportunities))throw new Error('bad')
     currentTotalPairs=Number(d.totalPairs)||0
@@ -239,16 +234,16 @@ async function scan(){
     renderWeek(currentWeekCandidates)
     addLog(now,d.opportunities)
   }catch(e){
-    dtimeh.textContent='mock — server offline'
+    dtimeh.textContent='server offline — no live data'
     updatePairCounters(0)
-    updatePlatformBadges({ opportunities: [] })
-    currentNearMisses = nearMock
-    currentWeekCandidates = weekMock
-    updateStats(mock,now)
-    renderOpps(mock)
+    updatePlatformBadges(emptyData)
+    currentNearMisses = []
+    currentWeekCandidates = []
+    updateStats(emptyData.opportunities,now)
+    renderOpps(emptyData.opportunities)
     renderNear(currentNearMisses)
     renderWeek(currentWeekCandidates)
-    addLog(now,mock)
+    addLog(now,emptyData.opportunities)
   }
 }
 
