@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArbDetector — Live Dashboard</title>
-  <meta name="description" content="Live arbitrage dashboard — real-time opportunities across Manifold and Polymarket.">
+  <meta name="description" content="Live arbitrage dashboard — real-time opportunities across Kalshi and Polymarket.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%2316a34a'/><text x='16' y='21' text-anchor='middle' font-size='14' font-weight='bold' fill='white' font-family='monospace'>A</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
 </nav>
 
 <div class="stat-bar" aria-label="Global Statistics">
-  <div class="sb-item"><div class="sb-label">PAIRS</div><div class="sb-val">7</div><div class="sb-hint">monitored</div></div>
+  <div class="sb-item"><div class="sb-label">PAIRS</div><div class="sb-val" id="d-pairs">—</div><div class="sb-hint">monitored</div></div>
   <div class="sb-item"><div class="sb-label">ACTIVE ARB</div><div class="sb-val g" id="d-act">—</div><div class="sb-hint" id="d-acth">scanning...</div></div>
   <div class="sb-item"><div class="sb-label">BEST PROFIT</div><div class="sb-val g" id="d-best">—</div><div class="sb-hint" id="d-besth">after fees</div></div>
   <div class="sb-item"><div class="sb-label">LAST SCAN</div><div class="sb-val" id="d-time" style="font-size:15px">--:--</div><div class="sb-hint" id="d-timeh">connecting...</div></div>
@@ -48,6 +48,13 @@
     
     <div class="divdr"><div class="dl"></div><h2 class="dlbl">NEAR MISS — watching</h2><div class="dl"></div></div>
     <div class="near-grid" id="near-grid" aria-live="polite">
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+      <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
+    </div>
+
+    <div class="divdr"><div class="dl"></div><h2 class="dlbl">READY THIS WEEK (≤ 7D)</h2><div class="dl"></div></div>
+    <div class="near-grid" id="week-grid" aria-live="polite">
       <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
       <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
       <div class="ncard"><div class="nc-pct">—</div><div class="nc-name">loading...</div></div>
@@ -86,9 +93,9 @@
 </main>
 
 <footer class="dash-foot">
-  <div class="fp on"><div class="fp-dot"></div>Manifold</div>
-  <div class="fp on"><div class="fp-dot"></div>Polymarket</div>
-  <div class="fp">7 pairs</div>
+  <div class="fp on" id="fp-a"><div class="fp-dot"></div>KALSHI</div>
+  <div class="fp on" id="fp-b"><div class="fp-dot"></div>POLYMARKET</div>
+  <div class="fp" id="fp-pairs">0 pairs</div>
   <div class="fp">fees included</div>
   <div class="fp" id="dtotal" aria-live="polite">0 arb detected</div>
 </footer>

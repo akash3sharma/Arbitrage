@@ -1,19 +1,20 @@
-const { fetchManifoldMarkets } = require('./first')
+const { fetchKalshiMarkets } = require('./first')
 const { fetchPolyMarkets } = require('./second')
-const { convertManifold, convertPolymarket } = require('./converter')
+const { convertKalshi, convertPolymarket } = require('./converter')
 const { matchMarkets } = require('./eventMatcher')
 const { detectArb } = require('./detectArb')
 
 async function runLiveTest() {
-  console.log("Fetching from real APIs...")
+  const topic = process.env.ARBITRAGE_TOPIC || 'election'
+  console.log(`Fetching from real-money APIs (topic: ${topic})...`)
 
-  const manifoldRaw = await fetchManifoldMarkets()
-  const polyRaw = await fetchPolyMarkets()
+  const kalshiRaw = await fetchKalshiMarkets(topic)
+  const polyRaw = await fetchPolyMarkets(topic)
 
-  console.log(`Manifold: ${manifoldRaw.length} markets`)
+  console.log(`Kalshi: ${kalshiRaw.length} markets`)
   console.log(`Polymarket: ${polyRaw.length} markets`)
 
-  const platformA = convertManifold(manifoldRaw)
+  const platformA = convertKalshi(kalshiRaw)
   const platformB = convertPolymarket(polyRaw)
 
   console.log("\nPlatform A sample:", platformA[0])

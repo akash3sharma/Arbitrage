@@ -218,6 +218,9 @@ async function fetchStats(){
     const r   = await fetch(`${API_URL}/opportunities`)
     const d   = await r.json()
     const ops = d.opportunities || []
+    const pairCount = Number(d.totalPairs) || 0
+    const hPairs = document.getElementById('h-pairs')
+    if (hPairs) hPairs.textContent = pairCount
     const harblEl = document.getElementById('h-arb');
     if(harblEl) harblEl.textContent = ops.length
     const s = document.getElementById('t-status')

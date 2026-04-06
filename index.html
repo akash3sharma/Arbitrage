@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArbDetector — Find arbitrage before it closes</title>
-  <meta name="description" content="Real-time arbitrage scanner for Manifold and Polymarket. Find guaranteed profit opportunities before the market corrects.">
+  <meta name="description" content="Real-time arbitrage scanner for Kalshi and Polymarket. Find guaranteed profit opportunities before the market corrects.">
   <meta property="og:title" content="ArbDetector — Find arbitrage before it closes">
   <meta property="og:description" content="Scan two prediction markets simultaneously. Profit guaranteed, regardless of outcome.">
   <meta property="og:type" content="website">
@@ -36,10 +36,10 @@
   <canvas class="beams-canvas" id="beams-canvas"></canvas>
   <div class="beam-floor"></div>
   <div class="hero-content fade-in visible">
-    <div class="h-badge"><div class="h-bdot"></div>LIVE · Manifold × Polymarket · 5s scans</div>
+    <div class="h-badge"><div class="h-bdot"></div>LIVE · Kalshi × Polymarket · 5s scans</div>
     <h1 class="h-title">Find the <em>edge.</em><br>Before it closes.</h1>
     <div class="h-kicker">Scan two platforms simultaneously.<br><strong>Profit guaranteed, regardless of outcome.</strong></div>
-    <div class="h-sub">ArbDetector finds price gaps between the same events on Manifold and Polymarket. Buy both sides — one always wins. Keep the difference after all fees.</div>
+    <div class="h-sub">ArbDetector finds price gaps between the same events on Kalshi and Polymarket. Buy both sides — one always wins. Keep the difference after all fees.</div>
     <div class="h-btns">
       <button class="btn-pri" aria-label="See Live Opportunities" onclick="document.getElementById('teaser').scrollIntoView({behavior:'smooth'})">
         See Live Opportunities
@@ -48,7 +48,7 @@
       <button class="btn-sec" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
     </div>
     <div class="h-stats">
-      <div class="h-stat"><div class="h-stat-val">7</div><div class="h-stat-lbl">PAIRS MONITORED</div></div>
+      <div class="h-stat"><div class="h-stat-val" id="h-pairs">—</div><div class="h-stat-lbl">PAIRS MONITORED</div></div>
       <div class="h-stat"><div class="h-stat-val" id="h-arb">2</div><div class="h-stat-lbl">ACTIVE ARB</div></div>
       <div class="h-stat"><div class="h-stat-val" id="h-best">+1.6%</div><div class="h-stat-lbl">BEST PROFIT</div></div>
       <div class="h-stat"><div class="h-stat-val">5s</div><div class="h-stat-lbl">SCAN SPEED</div></div>
@@ -73,7 +73,7 @@
         <div class="step-num">01</div>
         <div class="step-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
         <div class="step-title">We scan both platforms</div>
-        <div class="step-desc">Every 5 seconds we fetch live prices from Manifold and Polymarket. Our fuzzy matcher correctly pairs markets even when names differ between platforms.</div>
+        <div class="step-desc">Every 5 seconds we fetch live prices from Kalshi and Polymarket. Our fuzzy matcher correctly pairs markets even when names differ between platforms.</div>
       </div>
       <div class="step">
         <div class="step-num">02</div>
@@ -230,7 +230,7 @@
     <div class="f-note">Built by Abhi & Aakash · 2026 · All prices shown are indicative</div>
     <div class="f-badges">
       <div class="f-badge live">LIVE</div>
-      <div class="f-badge">Manifold</div>
+      <div class="f-badge">Kalshi</div>
       <div class="f-badge">Polymarket</div>
       <div class="f-badge">fuse.js</div>
     </div>
